@@ -262,6 +262,13 @@ queue.process(CONFIG.logins.length, botController, async (job) => {
     itemData.iteminfo.stickers = itemData.iteminfo.stickers.map((s) => utils.removeNullValues(s));
     itemData.iteminfo.keychains = itemData.iteminfo.keychains.map((s) => utils.removeNullValues(s));
 
+    if (itemData.iteminfo.stickers?.length) {
+        itemData.iteminfo.stickers = itemData.iteminfo.stickers.map(s => ({
+            ...s,
+            sticker_name: stickersMapper.stickerName(s.sticker_id ?? s.stickerKit ?? s.id),
+        }));
+    }
+
     job.data.job.setResponse(job.data.link.getParams().a, itemData.iteminfo);
 
     return delay;

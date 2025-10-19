@@ -265,7 +265,7 @@ queue.process(CONFIG.logins.length, botController, async (job) => {
     if (itemData.iteminfo.stickers?.length) {
         itemData.iteminfo.stickers = itemData.iteminfo.stickers.map(s => ({
             ...s,
-            sticker_name: stickersMapper.stickerName(s.sticker_id ?? s.stickerKit ?? s.id),
+            sticker_name: stickersMapper.stickerName(s.stickerId),
         }));
     }
 

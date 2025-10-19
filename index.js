@@ -109,6 +109,13 @@ async function handleJob(job) {
         gameData.addAdditionalItemProperties(item);
         item = utils.removeNullValues(item);
 
+        if (item.stickers?.length) {
+            item.stickers = item.stickers.map(s => ({
+                ...s,
+                sticker_name: stickersMapper.stickerName(s.stickerId),
+            }));
+        }
+
         job.setResponse(item.a, item);
     }
 

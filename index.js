@@ -18,6 +18,7 @@ const winston = require('winston'),
     gameData = new (require('./lib/game_data'))(CONFIG.game_files_update_interval, CONFIG.enable_game_file_updates),
     errors = require('./errors'),
     PairScheduler = require('./lib/pair_scheduler'),
+    stickersMapper = require('./lib/stickers_mapper'),
     Job = require('./lib/job');
 
 if (CONFIG.max_simultaneous_requests === undefined) {
@@ -34,6 +35,10 @@ if (CONFIG.logins.length === 0) {
 if (args.steam_data) {
     CONFIG.bot_settings.steam_user.dataDirectory = args.steam_data;
 }
+
+(async () => {
+    await stickersMapper.load();
+})();
 
 const pairs = [];
 for (let [i, loginData] of CONFIG.logins.entries()) {
@@ -103,6 +108,13 @@ async function handleJob(job) {
 
         gameData.addAdditionalItemProperties(item);
         item = utils.removeNullValues(item);
+
+        if (item.stickers?.length) {
+            item.stickers = item.stickers.map(s => ({
+                ...s,
+                sticker_name: stickersMapper.stickerName(s.stickerId),
+            }));
+        }
 
         job.setResponse(item.a, item);
     }
@@ -256,6 +268,13 @@ queue.process(CONFIG.logins.length, botController, async (job) => {
     itemData.iteminfo = utils.removeNullValues(itemData.iteminfo);
     itemData.iteminfo.stickers = itemData.iteminfo.stickers.map((s) => utils.removeNullValues(s));
     itemData.iteminfo.keychains = itemData.iteminfo.keychains.map((s) => utils.removeNullValues(s));
+
+    if (itemData.iteminfo.stickers?.length) {
+        itemData.iteminfo.stickers = itemData.iteminfo.stickers.map(s => ({
+            ...s,
+            sticker_name: stickersMapper.stickerName(s.stickerId),
+        }));
+    }
 
     job.data.job.setResponse(job.data.link.getParams().a, itemData.iteminfo);
 

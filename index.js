@@ -59,7 +59,7 @@ for (let [i, loginData] of CONFIG.logins.entries()) {
 	}
 
 	const bot = botController.addBot(loginData, settings); // RETURN bot
-	pairs.push({ bot: bot.id, proxy });                    // COLLECT pair
+	pairs.push({ bot: bot.loginData.accountName, proxy });                    // COLLECT pair
 }
 
 const scheduler = new PairScheduler(pairs);
